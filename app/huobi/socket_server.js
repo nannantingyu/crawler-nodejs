@@ -31,11 +31,15 @@ function init_client() {
         socket.on("kline_data", function(data) {
             console.log("need kline_data");
             ws_server.send(JSON.stringify({
-                "req": `market.btcusdt.kline.1min`,
-                "id": `btcusdt`,
+                "req": `market.${data}.kline.1min`,
+                "id": `${data}`,
                 "from": parseInt((Date.now()-100*60*1000)/1000),
                 "to": parseInt(Date.now()/1000)
             }));
+        });
+
+        socket.on("tick_data", function(data) {
+            subscribe(ws_server, [data]);
         });
     });
 
@@ -53,7 +57,7 @@ function init_client() {
 function init_server() {
     ws_server = new WebSocket(WS_URL);
     ws_server.on('open', () => {
-        subscribe(ws_server);
+        console.log("server open");
     });
     ws_server.on('message', (data) => {
         if(client_socket) {
@@ -95,8 +99,8 @@ function init_server() {
 }
 
 exports.OrderBook = orderbook;
-function subscribe(ws) {
-    var symbols = ['btcusdt'];
+function subscribe(ws, symbols) {
+    var symbols = symbols || ['btcusdt'];
     // 订阅K线
     for (let symbol of symbols) {
         ws.send(JSON.stringify({
