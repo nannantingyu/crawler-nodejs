@@ -23,6 +23,7 @@
     "kafka-node": "^2.2.3",
     "mysql": "^2.14.1",
     "net": "^1.0.2",
+    "pako": "^1.0.6",
     "socket.io-client": "^2.0.3"
   }
 }
