@@ -4,7 +4,16 @@ const pako = require('pako');
 const WS_URL = 'wss://api.huobi.pro/ws';
 var orderbook = {};
 var ws_server = null, ws_client = null, client_socket = null;
-var app = require('http').createServer(handler);
+const fs = require('fs');
+var privateKey = fs.readFileSync('yjshare.key').toString();
+var certificate = fs.readFileSync('yjshare.crt').toString();
+var ca = fs.readFileSync('yjshare.pem').toString();
+const options = {
+    key: fs.readFileSync('yjshare.key'),
+    cert: fs.readFileSync('yjshare.crt')
+};
+
+var app = require('https').createServer(options, handler);
 app.listen(8088);
 
 function handler (req, res) {
@@ -21,7 +30,11 @@ function handler (req, res) {
 }
 
 function init_client() {
-    ws_client = require('socket.io')(app);
+    ws_client = require('socket.io')(app, {
+        key:privateKey,
+        cert:certificate,ca:ca
+    });
+
     var fs = require('fs');
 
     ws_client.on('connection', function (socket) {
