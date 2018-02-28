@@ -88,6 +88,7 @@ function init_server() {
                 let channel = msg.ch.split('.')[2];
                 switch (channel) {
                     case 'depth':
+                        console.log(msg);
                         break;
                     case 'kline':
                         client_socket.emit(`tick_client`, msg);
@@ -118,6 +119,11 @@ function subscribe(ws, symbols) {
     for (let symbol of symbols) {
         ws.send(JSON.stringify({
             "sub": `market.${symbol}.kline.1min`,
+            "id": `${symbol}`
+        }));
+
+        ws.send(JSON.stringify({
+            "sub": `market.${symbol}.depth.step0`,
             "id": `${symbol}`
         }));
     }
